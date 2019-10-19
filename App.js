@@ -8,12 +8,14 @@
 */
 
 import React from 'react';
-import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
-import { Images, Colors } from './App/Themes'
+import { StyleSheet, Text, View, SafeAreaView, Image, TextInput, TouchableOpacity, FlatList, Keyboard, TouchableWithoutFeedback, Linking, ActivityIndicator} from 'react-native';
+import { Images, Colors, Metrics} from './App/Themes'
 import APIRequest from './App/Config/APIRequest'
 
 import News from './App/Components/News'
 import Search from './App/Components/Search'
+import images from './App/Themes/Images';
+
 
 export default class App extends React.Component {
 
@@ -25,9 +27,7 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-
-    //uncomment this to run an API query!
-    //this.loadArticles();
+    this.loadArticles();
   }
 
   async loadArticles(searchTerm = '', category = '') {
@@ -42,25 +42,36 @@ export default class App extends React.Component {
     this.setState({loading: false, articles: resultArticles})
   }
 
+  onChangeText = text => {
+    this.setState({searchText: text});
+  }
+  
+  onSubmitText = () => {
+    this.loadArticles(this.state.searchText);
+
+  }
+
   render() {
     const {articles, loading} = this.state;
 
     return (
-      <SafeAreaView style={styles.container}>
-
-        <Text style={{textAlign: 'center'}}>Have fun! :) {"\n"} Start by changing the API Key in "./App/Config/AppConfig.js" {"\n"} Then, take a look at the following components: {"\n"} NavigationButtons {"\n"} Search {"\n"} News {"\n"} 🔥</Text>
-
-        {/*First, you'll need a logo*/}
-
-        {/*Then your search bar*/}
-
-        {/*And some news*/}
-
-        {/*Though, you can style and organize these however you want! power to you 😎*/}
-
-        {/*If you want to return custom stuff from the NYT API, checkout the APIRequest file!*/}
-
-      </SafeAreaView>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <SafeAreaView style={styles.container}>
+        
+          <Image style={styles.nytLogo} source={images.logo}/>
+          <View style={{flexDirection: 'row'}}>
+            <Search 
+              searchText={this.state.searchText}
+              onChangeText={this.onChangeText}
+              onSubmitText={this.onSubmitText}
+            />
+          </View>
+          <View style={styles.articleContent}>
+            <News articles={articles}/>
+          </View>
+        
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
     );
   }
 }
@@ -69,7 +80,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    justifyContent: 'center',
     alignItems: 'center'
-  }
+  },
+  nytLogo: {
+    marginHorizontal: Metrics.marginHorizontal,
+    marginVertical: Metrics.marginVertical,
+    width: Metrics.screenWidth,
+    height: Metrics.images.large,
+    flexDirection: 'row',
+
+  },
+  articleContent: {
+    flex: 4,
+  },
 });

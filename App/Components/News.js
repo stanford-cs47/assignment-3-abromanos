@@ -9,8 +9,8 @@
 
 import React, { Component } from 'react'
 import PropTypes from 'prop-types' //consider using this!
-import { StyleSheet, SafeAreaView, View, FlatList, Text, Linking } from 'react-native'
-import { material } from 'react-native-typography' //consider using this!
+import { StyleSheet, SafeAreaView, View, FlatList, Text, Linking, TouchableOpacity } from 'react-native'
+import { material } from 'react-native-typography' 
 import { Metrics, Colors } from '../Themes'
 
 export default class News extends Component {
@@ -27,7 +27,20 @@ export default class News extends Component {
 
     return (
       <View style={styles.container}>
-        {/*Some FlatList or SectionList*/}
+        <FlatList
+          data={this.props.articles}
+          renderItem={({ item }) => (
+            <View style={{margin: 20 }}> 
+              <TouchableOpacity onPress={() => Linking.openURL(item.url)}>
+                <Text style={material.headline}>{item.title}</Text>
+                <Text style={material.body1}>{item.snippet}</Text>
+                <Text style={material.button}>{item.byline}</Text>
+                <Text style={material.caption}>{item.date}</Text>
+                </TouchableOpacity>
+            </View> 
+          )}
+          keyExtractor={item => item.url}
+        />
       </View>
     );
   }
